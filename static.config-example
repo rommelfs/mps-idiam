@@ -1,0 +1,15 @@
+# These are (usually) static configuration options:
+
+X509_CERT="/etc/letsencrypt/live/$FQDN/fullchain.pem"
+X509_KEY="/etc/letsencrypt/live/$FQDN/privkey.pem"
+NETPLAN_FILE="/etc/netplan/10-init.yaml"
+EXEC="lxc exec --env DEBIAN_FRONTEND=noninteractive --env NEEDRESTART_MODE=a $CONTAINER -- bash -c "
+MISP_Installer="https://raw.githubusercontent.com/MISP/MISP/refs/heads/2.5/INSTALL/INSTALL.ubuntu2404.sh"
+
+# These will be filled-out automatically
+
+MISP_API_KEY=""
+VM_ID=""
+IF_ID=""
+IPv4_ID=""
+IPv6_ID=""

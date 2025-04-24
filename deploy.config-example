@@ -1,0 +1,20 @@
+# Configure these mandatorily:
+
+CONTAINER="" # name of the container
+IPv4_ADDR="" # with netmask like 8.8.8.8/24
+IPv6_ADDR="" # with netmask like a:b:c:d::e/48
+FQDN=""      # FQDN of the target machine
+
+
+# Configure these optionally:
+
+RELAY_HOST="" 		# relay host name for SMTP
+Netbox_cluster=""      	# cluster ID
+Netbox_device=""      	#  device ID running the cluster
+Netbox_site=""         	# site ID
+Netbox_role=""         	# role ID
+
+IPv4_DNS=""		# IPv4 DNS server
+IPv6_DNS=""		# IPv6 DNS server	
+IPv4_ROUTE=""		# IPv4 default gateway
+IPv6_ROUTE=""		# IPv6 default gateway

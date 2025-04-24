@@ -1,0 +1,24 @@
+CONTAINER_OS="ubuntu:24.04" # ubuntu:24.04 is minimum requirement for the MISP installer
+
+OpenNMS_user=""
+OpenNMS_pass=""
+OpenNMS_host="://ccq.circl.lu"
+OpenNMS_base="/opennms/rest"
+OpenNMS_requisition=""
+OpenNMS_header="accept: application/json"
+
+Netbox_API_Token=""
+Netbox_host=""
+Netbox_API="/api"
+
+SNMP_user=""
+SNMP_key=""
+SNMP_proto=""
+
+EMAIL_ADDR=""
+MISP_bounce_email=""
+
+SNMP_location=""
+SNMP_contact=""
+
+OpenNMS_services_and_metadata="<node node-label=\"${FQDN}\" foreign-id=\"${FQDN}\" building=\"Datacenter Luxembourg\"><interface snmp-primary=\"N\" status=\"1\" ip-addr=\"${IPADDR}\" descr=\"\"><monitored-service service-name=\"HTTP\"/><monitored-service service-name=\"HTTPS\"/><monitored-service service-name=\"ICMP\"/><monitored-service service-name=\"MISP-REST-latency:${FQDN}\"/><monitored-service service-name=\"MISP-REST:${FQDN}\"/><monitored-service service-name=\"MISP-Version:${FQDN}\"/><monitored-service service-name=\"MISP-diag:${FQDN}\"/><monitored-service service-name=\"MISP-worker:${FQDN}\"/><monitored-service service-name=\"Process-mariadbd\"/><monitored-service service-name=\"Process-apache2\"/><monitored-service service-name=\"Process-redis-server-6379\"/><monitored-service service-name=\"SNMP\"/><monitored-service service-name=\"SSH\"/><monitored-service service-name=\"Web:${FQDN}\"/><monitored-service service-name=\"X509:${FQDN}\"/></interface><meta-data context=\"requisition\" key=\"misp-apikey\" value=\"${MISP_API_KEY}\"/><meta-data context=\"requisition\" key=\"path\" value=\"/users/login\"/></node>"

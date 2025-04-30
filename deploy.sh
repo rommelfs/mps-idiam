@@ -17,6 +17,7 @@ before=$(set -o posix; set | sort);
 source deploy.config
 source private.config
 source static.config
+MISP_API_KEY=""
 
 while true; do
     read -p "Do you wish to review the variables before proceeding? " yn
@@ -36,7 +37,7 @@ while true; do
 done
 
 echo "Deployment started."
-exit
+
 prepare_lxc (){
   echo "Creating LXC container."
   lxc launch $CONTAINER_OS $CONTAINER --profile default --profile macvlan
@@ -133,8 +134,9 @@ prepare_postfix () {
   $EXEC "apt install -y postfix"
   $EXEC "sudo postconf -e relayhost=[${RELAY_HOST}]"
   $EXEC "echo \"www-data@$FQDN ${MISP_bounce_email}\" >> /etc/postfix/generic"
+  $EXEC "postconf -e myhostname=${FQDN}"
+  $EXEC "postconf -e smtp_generic_maps=hash:/etc/postfix/generic"
   $EXEC "postmap /etc/postfix/generic"
-  $EXEC "postconf -e smtp_generic_maps=/etc/postfix/generic"
   $EXEC "/etc/init.d/postfix restart"
 }
 
@@ -145,9 +147,9 @@ show_summary () {
 
 prepare_OpenNMS () {
   echo "Setting up the new host in OpenNMS monitoring."
+  source opennms-service.config
   # add services in OpenNMS Requisition
-  IPADDR=$(echo $IPv4_ADDR | cut -d "/" -f 1) 
-  curl -s -i -u ${OpenNMS_user}:${OpenNMS_pass} -H "Content-type: application/xml" -d ${OpenNMS_services_and_metadata} $OpenNMS_host${OpenNMS_base}/requisitions/${OpenNMS_requisition}/nodes
+  curl -s -i -u ${OpenNMS_user}:${OpenNMS_pass} -H "Content-type: application/xml" -d "<node node-label=\"${FQDN}\" foreign-id=\"${FQDN}\" building=\"Datacenter Luxembourg\"><interface snmp-primary=\"N\" status=\"1\" ip-addr=\"${IPADDR}\" descr=\"\"><monitored-service service-name=\"HTTP\"/><monitored-service service-name=\"HTTPS\"/><monitored-service service-name=\"ICMP\"/><monitored-service service-name=\"MISP-REST-latency:${FQDN}\"/><monitored-service service-name=\"MISP-REST:${FQDN}\"/><monitored-service service-name=\"MISP-Version:${FQDN}\"/><monitored-service service-name=\"MISP-diag:${FQDN}\"/><monitored-service service-name=\"MISP-worker:${FQDN}\"/><monitored-service service-name=\"Process-mariadbd\"/><monitored-service service-name=\"Process-apache2\"/><monitored-service service-name=\"Process-redis-server-6379\"/><monitored-service service-name=\"SNMP\"/><monitored-service service-name=\"SSH\"/><monitored-service service-name=\"Web:${FQDN}\"/><monitored-service service-name=\"X509:${FQDN}\"/></interface><meta-data context=\"requisition\" key=\"misp-apikey\" value=\"${MISP_API_KEY}\"/><meta-data context=\"requisition\" key=\"path\" value=\"/users/login\"/></node>" $OpenNMS_host${OpenNMS_base}/requisitions/${OpenNMS_requisition}/nodes
   # Sync Requisition
   curl -s -i -u ${OpenNMS_user}:${OpenNMS_pass} -X PUT ${OpenNMS_host}${OpenNMS_base}/requisitions/${OpenNMS_requisition}/import?rescanExisting=false
 }
@@ -283,16 +285,18 @@ EOF"
   $EXEC "./misp-ingest.sh"
 }
 
-prepare_lxc
-prepare_netplan
-prepare_update
-prepare_snmp
-prepare_certbot
-prepare_MISP
-prepare_postfix
-prepare_OpenNMS
-prepare_Netbox
-ingest_MISP_data
+IPADDR=$(echo $IPv4_ADDR | cut -d "/" -f 1) 
+
+#prepare_lxc
+#prepare_netplan
+#prepare_update
+#prepare_snmp
+#prepare_certbot
+#prepare_MISP
+#prepare_postfix
 show_summary
+prepare_OpenNMS
+#prepare_Netbox
+#ingest_MISP_data
 
 exit 0
